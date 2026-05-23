@@ -1,0 +1,16 @@
+﻿  DllMain.cpp
+C:\Users\Administrator\Desktop\游戏\ch\新建文件夹\cs2\cs2\Main\DllMain.cpp(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+  esp.cpp
+  gui.cpp
+C:\Users\Administrator\Desktop\游戏\ch\新建文件夹\cs2\cs2\gui\gui.cpp(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+LINK : warning LNK4098: 默认库“MSVCRTD”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
+  正在生成代码
+  0 of 1251 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  已完成代码的生成
+minhook.x64d.lib(hook.c.obj) : warning LNK4099: 未找到 PDB“minhook.pdb”(使用“minhook.x64d.lib(hook.c.obj)”或在“C:\Users\Administrator\Desktop\游戏\ch\新建文件夹\cs2\x64\Release\minhook.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+minhook.x64d.lib(buffer.c.obj) : warning LNK4099: 未找到 PDB“minhook.pdb”(使用“minhook.x64d.lib(buffer.c.obj)”或在“C:\Users\Administrator\Desktop\游戏\ch\新建文件夹\cs2\x64\Release\minhook.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+minhook.x64d.lib(trampoline.c.obj) : warning LNK4099: 未找到 PDB“minhook.pdb”(使用“minhook.x64d.lib(trampoline.c.obj)”或在“C:\Users\Administrator\Desktop\游戏\ch\新建文件夹\cs2\x64\Release\minhook.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+minhook.x64d.lib(hde64.c.obj) : warning LNK4099: 未找到 PDB“minhook.pdb”(使用“minhook.x64d.lib(hde64.c.obj)”或在“C:\Users\Administrator\Desktop\游戏\ch\新建文件夹\cs2\x64\Release\minhook.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+  cs2.vcxproj -> C:\Users\Administrator\Desktop\游戏\ch\新建文件夹\cs2\x64\Release\cs2.dll
