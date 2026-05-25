@@ -142,6 +142,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="feature\esp.cpp" />
+    <ClCompile Include="feature\glow.cpp" />
+    <ClCompile Include="feature\recoil.cpp" />
+    <ClCompile Include="feature\tiggerbot.cpp" />
     <ClCompile Include="gui\gui.cpp" />
     <ClCompile Include="imgui_d11\imgui.cpp" />
     <ClCompile Include="imgui_d11\imgui_draw.cpp" />
@@ -175,6 +178,9 @@
     <ClInclude Include="cs2_dumper\vphysics2_dll.hpp" />
     <ClInclude Include="cs2_dumper\worldrenderer_dll.hpp" />
     <ClInclude Include="feature\esp.h" />
+    <ClInclude Include="feature\glow.h" />
+    <ClInclude Include="feature\recoil.h" />
+    <ClInclude Include="feature\tiggerbot.h" />
     <ClInclude Include="gui\gui.h" />
     <ClInclude Include="imgui_d11\imconfig.h" />
     <ClInclude Include="imgui_d11\imgui.h" />

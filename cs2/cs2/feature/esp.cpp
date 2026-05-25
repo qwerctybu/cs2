@@ -7,8 +7,9 @@
 #include <cmath>
 #include "../imgui_d11/imgui.h"
 #include "../gui/gui.h"
+#include "esp.h"
 
-static uintptr_t GetBaseEntity(int index, uintptr_t client)
+uintptr_t GetBaseEntity(int index, uintptr_t client)
 {
 	auto entListBase = *reinterpret_cast<std::uintptr_t*>(client + cs2_dumper::offsets::client_dll::dwEntityList);
 	if (entListBase == 0)
@@ -25,26 +26,13 @@ static uintptr_t GetBaseEntity(int index, uintptr_t client)
 	return *reinterpret_cast<std::uintptr_t*>(entitylistbase + (0x70 * (index & 0x1FF)));
 }
 
-static uintptr_t GetBaseEntityFromHandle(uint32_t uHandle, uintptr_t client)
+uintptr_t GetBaseEntityFromHandle(uint32_t uHandle, uintptr_t client)
 {
-	auto entListBase = *reinterpret_cast<std::uintptr_t*>(client + cs2_dumper::offsets::client_dll::dwEntityList);
-	if (entListBase == 0)
-	{
-		return 0;
-	}
-
 	const int nIndex = uHandle & 0x7FFF;
-
-	auto entitylistbase = *reinterpret_cast<std::uintptr_t*>(entListBase + 8 * (nIndex >> 9) +16);
-	if(entitylistbase == 0)
-	{
-		return 0;
-	}
-
-	return *reinterpret_cast<std::uintptr_t*>(entitylistbase + (0x70 * (nIndex & 0x1FF)));
+	return GetBaseEntity(nIndex, client);
 }
 
-bool WorldToScreen(Vector3 pWorldPos, Vector3& pScreenPos,float* pMatrixPtr, const FLOAT pWinWidth, const FLOAT pWinHeight)
+bool WorldToScreen(const Vector3& pWorldPos, Vector3& pScreenPos, float* pMatrixPtr, const FLOAT pWinWidth, const FLOAT pWinHeight)
 {
 	float matrix2[4][4];
 
@@ -72,6 +60,82 @@ bool WorldToScreen(Vector3 pWorldPos, Vector3& pScreenPos,float* pMatrixPtr, con
 	pScreenPos.z = w;
 
 	return true;
+}
+
+Vector3 Bone_Base::BonePos(uintptr_t addr, int32_t index)
+{
+	int32_t d = 32 * index;
+	uintptr_t address{};
+	address = *reinterpret_cast<uintptr_t*>(addr + cs2_dumper::schemas::client_dll::C_BaseEntity::m_pGameSceneNode);
+	if(!address)
+	{
+		return Vector3{};
+	}
+	auto BoneArray = cs2_dumper::schemas::client_dll::CSkeletonInstance::m_modelState + 0x80;
+	address = *reinterpret_cast<uintptr_t*>(address + BoneArray);
+	if(!address)
+	{
+		return Vector3{};
+	}
+	return *reinterpret_cast<Vector3*>(address + d);
+}
+
+void DrawLine(std::vector<Vector3> list, ImColor Color, float* Matrix)
+{
+	Vector3 drawpos;
+	std::vector<Vector3>DrawList{};
+	for (int i = 0; i < list.size(); ++i)
+	{
+		if (!WorldToScreen(list[i], drawpos, Matrix, ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y))
+		{
+			continue;
+		}
+
+		DrawList.push_back(drawpos);
+	}
+	
+	for(int i = 1; i< DrawList.size(); ++i)
+	{
+		ImGui::GetBackgroundDrawList()->AddLine(ImVec2(DrawList[i].x, DrawList[i].y), ImVec2(DrawList[i - 1].x, DrawList[i - 1].y), Color);
+	}
+}
+
+void Bone_Start(uintptr_t pawn, ImColor BoneColor, float* Matrix)
+{
+	BoneDrawList.clear();
+	BoneDrawList.push_back(BonePos(pawn, Bone_Base::BoneIndex::Head));
+	BoneDrawList.push_back(BonePos(pawn, Bone_Base::BoneIndex::Neck_0));
+	BoneDrawList.push_back(BonePos(pawn, Bone_Base::BoneIndex::Spine_2));
+	BoneDrawList.push_back(BonePos(pawn, Bone_Base::BoneIndex::Pelvis));
+	DrawLine(BoneDrawList, BoneColor, Matrix);
+
+	BoneDrawList.clear();
+	BoneDrawList.push_back(BonePos(pawn, Bone_Base::BoneIndex::Neck_0));
+	BoneDrawList.push_back(BonePos(pawn, Bone_Base::BoneIndex::Arm_Upper_L));
+	BoneDrawList.push_back(BonePos(pawn, Bone_Base::BoneIndex::Arm_Lower_L));
+	BoneDrawList.push_back(BonePos(pawn, Bone_Base::BoneIndex::Hand_L));
+	DrawLine(BoneDrawList, BoneColor, Matrix);
+
+	BoneDrawList.clear();
+	BoneDrawList.push_back(BonePos(pawn, Bone_Base::BoneIndex::Neck_0));
+	BoneDrawList.push_back(BonePos(pawn, Bone_Base::BoneIndex::Arm_Upper_R));
+	BoneDrawList.push_back(BonePos(pawn, Bone_Base::BoneIndex::Arm_Lower_R));
+	BoneDrawList.push_back(BonePos(pawn, Bone_Base::BoneIndex::Hand_R));
+	DrawLine(BoneDrawList, BoneColor, Matrix);
+
+	BoneDrawList.clear();
+	BoneDrawList.push_back(BonePos(pawn, Bone_Base::BoneIndex::Pelvis));
+	BoneDrawList.push_back(BonePos(pawn, Bone_Base::BoneIndex::Leg_Upper_L));
+	BoneDrawList.push_back(BonePos(pawn, Bone_Base::BoneIndex::Leg_Lower_L));
+	BoneDrawList.push_back(BonePos(pawn, Bone_Base::BoneIndex::Foot_L));
+	DrawLine(BoneDrawList, BoneColor, Matrix);
+
+	BoneDrawList.clear();
+	BoneDrawList.push_back(BonePos(pawn, Bone_Base::BoneIndex::Pelvis));
+	BoneDrawList.push_back(BonePos(pawn, Bone_Base::BoneIndex::Leg_Upper_R));
+	BoneDrawList.push_back(BonePos(pawn, Bone_Base::BoneIndex::Leg_Lower_R));
+	BoneDrawList.push_back(BonePos(pawn, Bone_Base::BoneIndex::Foot_R));
+	DrawLine(BoneDrawList, BoneColor, Matrix);
 }
 
 std::optional<Vector3> GetEyePos(uintptr_t addr) noexcept
@@ -145,8 +209,6 @@ void draw_esp()
 			cs2_dumper::schemas::client_dll::C_BaseEntity::m_iTeamNum
 			);
 
-		// enemy_only 开启时
-		// 过滤队友
 		if (!cs2::visuals::enemy_only)
 		{
 			if (localteam == player_team)
@@ -172,8 +234,8 @@ void draw_esp()
 
 		auto player_eyepos = player_eyepos_op_vec.value();
 
-		static const float w = ImGui::GetIO().DisplaySize.x;
-		static const float h = ImGui::GetIO().DisplaySize.y;
+		const float w = ImGui::GetIO().DisplaySize.x;
+		const float h = ImGui::GetIO().DisplaySize.y;
 
 		Vector3 head_pos_2d{};
 		Vector3 abs_pos_2d{};
@@ -195,7 +257,24 @@ void draw_esp()
 
 		if (cs2::visuals::box)
 		{
-			ImGui::GetBackgroundDrawList()->AddRect(ImVec2(x, y), ImVec2(x + width, y + height), IM_COL32(255, 0, 0, 255), 0.0f, 0, 1.5f);
+			ImU32 color = IM_COL32(
+				(int)(cs2::visuals::box_color[0] * 255),
+				(int)(cs2::visuals::box_color[1] * 255),
+				(int)(cs2::visuals::box_color[2] * 255),
+				(int)(cs2::visuals::box_color[3] * 255)
+			);
+			ImGui::GetBackgroundDrawList()->AddRect(ImVec2(x, y), ImVec2(x + width, y + height), color, 0.0f, 0, 1.5f);
+		}
+
+		if(cs2::visuals::bone)
+		{
+			ImColor boneClr(
+				cs2::visuals::bone_color[0],
+				cs2::visuals::bone_color[1],
+				cs2::visuals::bone_color[2],
+				cs2::visuals::bone_color[3]
+			);
+			Bone_Start(player_pawn, boneClr, Matrix);
 		}
 	}
 }

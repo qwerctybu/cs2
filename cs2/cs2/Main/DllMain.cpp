@@ -7,6 +7,10 @@
 #include <thread>
 #include "../gui/gui.h"
 #include "../feature/esp.h"
+#include "../feature/recoil.h"
+#include "../feature/glow.h"
+#include "../feature/tiggerbot.h"
+#include "../cs2_dumper/offsets.hpp"
 static ID3D11Device* g_pd3dDevice = nullptr;
 static IDXGISwapChain* g_pSwapChain = nullptr;
 static ID3D11DeviceContext* g_pd3dContext = nullptr;
@@ -135,21 +139,16 @@ long __stdcall my_present(
 
 		if (cs2::menu::opened)
 		{
-			// 显示系统鼠标
 			ShowCursor(TRUE);
 
-			// 释放鼠标限制
 			ClipCursor(nullptr);
 
-			// 释放鼠标捕获
 			ReleaseCapture();
 
-			// 显示 ImGui 鼠标输入
 			ImGui::GetIO().MouseDrawCursor = false;
 		}
 		else
 		{
-			// 隐藏系统鼠标
 			ShowCursor(FALSE);
 
 			ImGui::GetIO().MouseDrawCursor = false;
@@ -166,6 +165,9 @@ long __stdcall my_present(
 	{
 		draw_Menu();
 	}
+
+	// RCS
+	do_recoil_control();
 
 	// ESP
 	draw_esp();
@@ -226,11 +228,11 @@ DWORD create(void*) {
 		MH_EnableHook(present);
 		g_pd3dDevice->Release();
 		g_pSwapChain->Release();
+
+		init_glow_hooks();
 	}
 
 	return 0;
-
-
 
 }
 
@@ -239,6 +241,8 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved
 	if (ul_reason_for_call == 1)
 	{
 		CreateThread(NULL, 0, create, NULL, 0, NULL);
+
+		CreateThread(NULL, 0, tiggerbot, NULL, 0, NULL);
 	}
 	return TRUE;
 }

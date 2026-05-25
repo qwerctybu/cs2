@@ -45,6 +45,15 @@
     <ClCompile Include="utils\Vector.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="feature\recoil.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="feature\glow.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="feature\tiggerbot.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui_d11\imconfig.h">
@@ -144,6 +153,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="utils\Vector.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="feature\recoil.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="feature\glow.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="feature\tiggerbot.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
